@@ -1,0 +1,34 @@
+[hl_monitor]
+    hyperliquid_ws_url = "wss://api.hyperliquid.xyz/ws"
+    health_server_addr = "0.0.0.0:8080"
+    address_reload_interval = "30s"
+    max_connections = 20
+    max_subscriptions_per_connection = 150  # 150/3*20 监听的地址数
+
+[mysql]
+    dsn = "root:password@tcp(localhost:3306)/utrading?charset=utf8mb4&parseTime=True&loc=Local"
+    # slave_addr = ["root:pass@tcp(slave1:3306)/utrading?charset=utf8mb4&parseTime=True&loc=Local"]  # 从库地址列表
+    max_idle_connections = 16
+    max_open_connections = 64
+    set_conn_max_lifetime = 7200   # 连接最大生命周期（秒）
+    set_conn_max_idle_time = 3600 # 连接最大空闲时间（秒）
+    proxy_enabled = false         # 是否启用 SOCKS5 代理
+    proxy_addr = "127.0.0.1:7890" # 代理地址
+
+[nats]
+    endpoint = "nats://localhost:4222"
+
+[log]
+    level = "info"
+    max_size = 20
+    max_backups = 60
+    max_age = 3
+    compress = false
+    console = false
+
+[order_aggregation]
+    timeout = "5m"
+    scan_interval = "30s"
+    max_retry = 3
+    retry_delay = "1s"
+
