@@ -1,0 +1,57 @@
+services:
+  # NATS 消息服务器
+  nats:
+    image: nats:2.10.22-alpine
+    container_name: hl-monitor-nats
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+      - "7777:7777"
+    volumes:
+      - nats_data:/data
+    command: "-js -sd /data"
+    networks:
+      - hl-monitor-net
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 4222 || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # MySQL 数据库
+  mysql:
+    image: mysql:8.0
+    container_name: hl-monitor-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: utrading
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_unicode_ci
+      TZ: Asia/Shanghai
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    networks:
+      - hl-monitor-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --default-time-zone=Asia/Shanghai
+
+volumes:
+  nats_data:
+    driver: local
+  mysql_data:
+    driver: local
+
+networks:
+  hl-monitor-net:
+    driver: bridge
