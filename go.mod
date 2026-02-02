@@ -75,4 +75,4 @@ require (
 	gorm.io/hints v1.1.2 // indirect
 )
 
-replace github.com/sonirico/go-hyperliquid => ../utrading-hyperliquid/pkg/go-hyperliquid
+replace github.com/sonirico/go-hyperliquid => ./pkg/go-hyperliquid

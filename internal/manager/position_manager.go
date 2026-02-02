@@ -3,6 +3,7 @@ package manager
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -171,6 +172,9 @@ func (m *PositionManager) processPositionCache(addr string, webdata2 *hl.WebData
 	if webdata2.SpotState != nil {
 		spotBalances = make(models.SpotBalancesData, 0, len(webdata2.SpotState.Balances))
 		for _, balance := range webdata2.SpotState.Balances {
+			if cast.ToFloat64(balance.Total) == 0 {
+				continue
+			}
 			coin := hl.MainnetToAlias(balance.Coin)
 			spotBalances = append(spotBalances, models.SpotBalanceItem{
 				Coin:     coin, // BTC
@@ -230,10 +234,22 @@ func (m *PositionManager) processPositionCache(addr string, webdata2 *hl.WebData
 
 			// 转换合约 coin 为统一格式 (BTC -> BTCUSDC)
 			coin := assetPos.Position.Coin
+			if strings.Contains(coin, ":") {
+				parts := strings.Split(coin, ":")
+				if len(parts) != 2 || parts[0] != "xyz" {
+					continue
+				}
+				coin = parts[1]
+			}
+
+			coin = hl.MainnetToAlias(coin)
+
 			if m.symbolCache != nil {
 				if converted, ok := m.symbolCache.GetPerpSymbol(coin); ok {
 					coin = converted
 				}
+			} else {
+				coin = coin + "USDC"
 			}
 
 			position := models.PositionItem{
