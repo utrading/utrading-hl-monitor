@@ -228,6 +228,18 @@ func (m *SubscriptionManager) handleWsOrderUpdates(user string, orders []hl.WsOr
 	for _, wsOrder := range orders {
 		order := wsOrder.Order
 
+		if strings.Contains(order.Coin, ":") {
+			parts := strings.Split(order.Coin, ":")
+			if parts[0] != "xyz" {
+				logger.Debug().
+					Str("address", user).
+					Str("coin", order.Coin).
+					Int64("order_id", order.Oid).
+					Msg("skipped order")
+				continue
+			}
+		}
+
 		// 通过 Oid 查找地址（从 OrderFills 中建立的映射）
 		addr, ok := m.oidToAddress.Load(order.Oid)
 		if !ok {
@@ -324,6 +336,18 @@ func (m *SubscriptionManager) handleWsOrderFills(orders hl.WsOrderFills) {
 				Msg("timeout skipping fill")
 			continue
 		}
+		if strings.Contains(fill.Coin, ":") {
+			parts := strings.Split(fill.Coin, ":")
+			if parts[0] != "xyz" {
+				logger.Debug().
+					Str("address", user).
+					Str("coin", fill.Coin).
+					Int64("order_id", fill.Oid).
+					Msg("skipping fill")
+				continue
+			}
+		}
+
 		orderGroups[fill.Oid] = append(orderGroups[fill.Oid], fill)
 	}
 
