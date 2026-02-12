@@ -17,6 +17,7 @@ import (
 
 var (
 	Q                = new(Query)
+	HlActiveAddress  *hlActiveAddress
 	HlAddressSignal  *hlAddressSignal
 	HlPositionCache  *hlPositionCache
 	HlWatchAddress   *hlWatchAddress
@@ -25,6 +26,7 @@ var (
 
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	*Q = *Use(db, opts...)
+	HlActiveAddress = &Q.HlActiveAddress
 	HlAddressSignal = &Q.HlAddressSignal
 	HlPositionCache = &Q.HlPositionCache
 	HlWatchAddress = &Q.HlWatchAddress
@@ -34,6 +36,7 @@ func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
 		db:               db,
+		HlActiveAddress:  newHlActiveAddress(db, opts...),
 		HlAddressSignal:  newHlAddressSignal(db, opts...),
 		HlPositionCache:  newHlPositionCache(db, opts...),
 		HlWatchAddress:   newHlWatchAddress(db, opts...),
@@ -44,6 +47,7 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 type Query struct {
 	db *gorm.DB
 
+	HlActiveAddress  hlActiveAddress
 	HlAddressSignal  hlAddressSignal
 	HlPositionCache  hlPositionCache
 	HlWatchAddress   hlWatchAddress
@@ -55,6 +59,7 @@ func (q *Query) Available() bool { return q.db != nil }
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
 		db:               db,
+		HlActiveAddress:  q.HlActiveAddress.clone(db),
 		HlAddressSignal:  q.HlAddressSignal.clone(db),
 		HlPositionCache:  q.HlPositionCache.clone(db),
 		HlWatchAddress:   q.HlWatchAddress.clone(db),
@@ -73,6 +78,7 @@ func (q *Query) WriteDB() *Query {
 func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
 		db:               db,
+		HlActiveAddress:  q.HlActiveAddress.replaceDB(db),
 		HlAddressSignal:  q.HlAddressSignal.replaceDB(db),
 		HlPositionCache:  q.HlPositionCache.replaceDB(db),
 		HlWatchAddress:   q.HlWatchAddress.replaceDB(db),
@@ -81,6 +87,7 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 }
 
 type queryCtx struct {
+	HlActiveAddress  IHlActiveAddressDo
 	HlAddressSignal  IHlAddressSignalDo
 	HlPositionCache  IHlPositionCacheDo
 	HlWatchAddress   IHlWatchAddressDo
@@ -89,6 +96,7 @@ type queryCtx struct {
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
+		HlActiveAddress:  q.HlActiveAddress.WithContext(ctx),
 		HlAddressSignal:  q.HlAddressSignal.WithContext(ctx),
 		HlPositionCache:  q.HlPositionCache.WithContext(ctx),
 		HlWatchAddress:   q.HlWatchAddress.WithContext(ctx),

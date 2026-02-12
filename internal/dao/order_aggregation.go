@@ -1,33 +1,17 @@
 package dao
 
 import (
-	"sync"
 	"time"
 
-	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
 	"github.com/utrading/utrading-hl-monitor/internal/dal/gen"
 	"github.com/utrading/utrading-hl-monitor/internal/models"
 )
 
-type OrderAggregationDAO struct {
-	db *gorm.DB
-}
+type OrderAggregationDAO struct{}
 
-var (
-	_orderAggregation     *OrderAggregationDAO
-	_orderAggregationOnce sync.Once
-)
-
-// InitOrderAggregationDAO 初始化 DAO
-func InitOrderAggregationDAO(db *gorm.DB) {
-	_orderAggregationOnce.Do(func() {
-		_orderAggregation = &OrderAggregationDAO{
-			db: db,
-		}
-	})
-}
+var _orderAggregation = &OrderAggregationDAO{}
 
 func OrderAggregation() *OrderAggregationDAO {
 	return _orderAggregation

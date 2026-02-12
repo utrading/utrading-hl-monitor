@@ -1,30 +1,12 @@
 package dao
 
 import (
-	"sync"
-
-	"gorm.io/gorm"
-
 	"github.com/utrading/utrading-hl-monitor/internal/dal/gen"
 )
 
-type WatchAddressDAO struct {
-	db *gorm.DB
-}
+type WatchAddressDAO struct{}
 
-var (
-	_watchAddress     *WatchAddressDAO
-	_watchAddressOnce sync.Once
-)
-
-// InitWatchAddressDAO 初始化 WatchAddressDAO
-func InitWatchAddressDAO(db *gorm.DB) {
-	_watchAddressOnce.Do(func() {
-		_watchAddress = &WatchAddressDAO{
-			db: db,
-		}
-	})
-}
+var _watchAddress = &WatchAddressDAO{}
 
 // WatchAddress 获取 WatchAddressDAO 单例
 func WatchAddress() *WatchAddressDAO {

@@ -24,6 +24,7 @@ func GenExecute(outPath string, db *gorm.DB) {
 		models.HlPositionCache{},
 		models.OrderAggregation{},
 		models.HlAddressSignal{},
+		models.HlActiveAddress{},
 	)
 
 	g.Execute()

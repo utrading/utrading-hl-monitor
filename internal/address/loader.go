@@ -121,9 +121,9 @@ func (l *AddressLoader) loadAndSync() error {
 	return nil
 }
 
-// loadActiveAddresses 从 hl_watch_addresses 表加载地址
+// loadActiveAddresses 从 hl_active_addresses 表加载地址
 func (l *AddressLoader) loadActiveAddresses() (map[string]bool, error) {
-	addresses, err := dao.WatchAddress().ListDistinctAddresses()
+	addresses, err := dao.ActiveAddress().ListDistinctAddresses()
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return make(map[string]bool), nil
@@ -138,7 +138,7 @@ func (l *AddressLoader) loadActiveAddresses() (map[string]bool, error) {
 
 	logger.Debug().
 		Int("count", len(result)).
-		Msg("loaded addresses from hl_watch_addresses")
+		Msg("loaded addresses from hl_active_addresses")
 
 	return result, nil
 }

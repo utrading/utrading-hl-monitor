@@ -1,32 +1,15 @@
 package dao
 
 import (
-	"sync"
-
-	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
 	"github.com/utrading/utrading-hl-monitor/internal/dal/gen"
 	"github.com/utrading/utrading-hl-monitor/internal/models"
 )
 
-type PositionDAO struct {
-	db *gorm.DB
-}
+type PositionDAO struct{}
 
-var (
-	_position     *PositionDAO
-	_positionOnce sync.Once
-)
-
-// InitPositionDAO 初始化 PositionDAO
-func InitPositionDAO(db *gorm.DB) {
-	_positionOnce.Do(func() {
-		_position = &PositionDAO{
-			db: db,
-		}
-	})
-}
+var _position = &PositionDAO{}
 
 // Position 获取 PositionDAO 单例
 func Position() *PositionDAO {

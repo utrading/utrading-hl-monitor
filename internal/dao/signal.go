@@ -1,33 +1,16 @@
 package dao
 
 import (
-	"sync"
 	"time"
-
-	"gorm.io/gorm"
 
 	"github.com/utrading/utrading-hl-monitor/internal/dal/gen"
 	"github.com/utrading/utrading-hl-monitor/internal/models"
 	"github.com/utrading/utrading-hl-monitor/internal/nats"
 )
 
-type SignalDAO struct {
-	db *gorm.DB
-}
+type SignalDAO struct{}
 
-var (
-	_signal     *SignalDAO
-	_signalOnce sync.Once
-)
-
-// InitSignalDAO 初始化 SignalDAO
-func InitSignalDAO(db *gorm.DB) {
-	_signalOnce.Do(func() {
-		_signal = &SignalDAO{
-			db: db,
-		}
-	})
-}
+var _signal = &SignalDAO{}
 
 // Signal 获取 SignalDAO 单例
 func Signal() *SignalDAO {
