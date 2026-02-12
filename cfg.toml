@@ -1,7 +1,8 @@
 [hl_monitor]
     hyperliquid_ws_url = "wss://api.hyperliquid.xyz/ws"
     health_server_addr = "0.0.0.0:8080"
-    address_reload_interval = "30s"
+    address_reload_interval = "1m"
+    address_remove_grace = "5m"
     max_connections = 20
     max_subscriptions_per_connection = 150  # 150/3*20 监听的地址数
 

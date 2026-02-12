@@ -13,19 +13,20 @@ type HLMonitor struct {
 	HyperliquidWSURL              string        `toml:"hyperliquid_ws_url"`
 	HealthServerAddr              string        `toml:"health_server_addr"`
 	AddressReloadInterval         time.Duration `toml:"address_reload_interval"`
+	AddressRemoveGrace            time.Duration `toml:"address_remove_grace"`
 	MaxConnections                int           `toml:"max_connections"`
 	MaxSubscriptionsPerConnection int           `toml:"max_subscriptions_per_connection"`
 }
 
 type MySQL struct {
-	DSN                  string   `toml:"dsn"`
-	SlaveAddr            []string `toml:"slave_addr"`
-	MaxIdleConnections   int      `toml:"max_idle_connections"`
-	MaxOpenConnections   int      `toml:"max_open_connections"`
-	SetConnMaxLifetime   int      `toml:"set_conn_max_lifetime"`
-	SetConnMaxIdleTime   int      `toml:"set_conn_max_idle_time"`
-	ProxyEnabled         bool     `toml:"proxy_enabled"`
-	ProxyAddr            string   `toml:"proxy_addr"`
+	DSN                string   `toml:"dsn"`
+	SlaveAddr          []string `toml:"slave_addr"`
+	MaxIdleConnections int      `toml:"max_idle_connections"`
+	MaxOpenConnections int      `toml:"max_open_connections"`
+	SetConnMaxLifetime int      `toml:"set_conn_max_lifetime"`
+	SetConnMaxIdleTime int      `toml:"set_conn_max_idle_time"`
+	ProxyEnabled       bool     `toml:"proxy_enabled"`
+	ProxyAddr          string   `toml:"proxy_addr"`
 }
 
 type NATS struct {
@@ -70,8 +71,9 @@ func Default() *Config {
 			HyperliquidWSURL:              "wss://api.hyperliquid.xyz/ws",
 			HealthServerAddr:              "0.0.0.0:16800",
 			AddressReloadInterval:         time.Minute,
+			AddressRemoveGrace:            5 * time.Minute,
 			MaxConnections:                20,  // 默认最多 20 个连接
-			MaxSubscriptionsPerConnection: 100, // 每个连接最多订阅 100 个地址
+			MaxSubscriptionsPerConnection: 150, // 每个连接最多订阅 150 个地址
 		},
 		MySQL: MySQL{
 			DSN:                "root:password@tcp(localhost:3306)/utrading?charset=utf8mb4&parseTime=True&loc=Local",

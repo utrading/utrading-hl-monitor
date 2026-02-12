@@ -110,6 +110,7 @@ func main() {
 	addrLoader := address.NewAddressLoader(
 		[]address.AddressSubscriber{subManager, posManager},
 		cfg.HLMonitor.AddressReloadInterval,
+		cfg.HLMonitor.AddressRemoveGrace,
 	)
 
 	// 启动地址加载器
