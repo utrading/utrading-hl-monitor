@@ -86,19 +86,42 @@ func (c *Cleaner) cleanOrderAggregation() error {
 	return nil
 }
 
-// cleanAddressSignals 清理 7 天前的地址信号数据
+// cleanAddressSignals 清理地址信号数据
+// 策略：时间优先（7天前），数量兜底（50万条限制）
 func (c *Cleaner) cleanAddressSignals() error {
-	cutoff := time.Now().AddDate(0, 0, -7) // 7 天前
+	// 1. 时间清理：删除 7 天前的记录
+	cutoff := time.Now().AddDate(0, 0, -7)
 	deleted, err := dao.Signal().DeleteOld(cutoff)
 	if err != nil {
 		return err
 	}
-
 	if deleted > 0 {
 		logger.Info().
 			Int64("deleted", deleted).
 			Time("cutoff", cutoff).
-			Msg("cleaned old address signals")
+			Msg("cleaned old address signals by time")
+	}
+
+	// 2. 数量检查：超过 50 万条时删除最旧的
+	const maxSignals = 500000
+	count, err := dao.Signal().Count()
+	if err != nil {
+		return err
+	}
+
+	if count > maxSignals {
+		excess := count - maxSignals
+		deleted, err = dao.Signal().DeleteOldest(excess)
+		if err != nil {
+			return err
+		}
+		if deleted > 0 {
+			logger.Info().
+				Int64("deleted", deleted).
+				Int64("total", count).
+				Int64("limit", maxSignals).
+				Msg("cleaned excess address signals by count")
+		}
 	}
 
 	return nil

@@ -51,3 +51,48 @@ func (d *SignalDAO) DeleteOld(before time.Time) (int64, error) {
 
 	return result.RowsAffected, nil
 }
+
+// Count 统计信号总数
+func (d *SignalDAO) Count() (int64, error) {
+	return gen.HlAddressSignal.Count()
+}
+
+// DeleteOldest 删除最旧的 N 条记录
+func (d *SignalDAO) DeleteOldest(limit int64) (int64, error) {
+	if limit <= 0 {
+		return 0, nil
+	}
+
+	// 获取最旧记录的 ID 范围
+	var oldestID uint
+	err := gen.HlAddressSignal.Order(gen.HlAddressSignal.ID).
+		Limit(1).
+		Select(gen.HlAddressSignal.ID).
+		Scan(&oldestID)
+	if err != nil {
+		return 0, err
+	}
+
+	// 计算截止 ID
+	var cutoffID uint
+	err = gen.HlAddressSignal.Where(
+		gen.HlAddressSignal.ID.Gte(oldestID),
+	).Order(gen.HlAddressSignal.ID).
+		Limit(1).
+		Offset(int(limit - 1)).
+		Select(gen.HlAddressSignal.ID).
+		Scan(&cutoffID)
+	if err != nil {
+		return 0, err
+	}
+
+	// 删除 ID <= cutoffID 的记录
+	result, err := gen.HlAddressSignal.Where(
+		gen.HlAddressSignal.ID.Lte(cutoffID),
+	).Delete()
+	if err != nil {
+		return 0, err
+	}
+
+	return result.RowsAffected, nil
+}
