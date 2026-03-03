@@ -93,13 +93,14 @@ type OrderProcessor struct {
 	deduper              cache.DedupCacheInterface
 	symbolCache          *cache.SymbolCache
 	positionBalanceCache *cache.PositionBalanceCache
+	pairCategoryCache    *cache.PairCategoryCache
 	timeout              time.Duration
 	flushChan            chan flushKey
 	done                 chan struct{}
 	wg                   sync.WaitGroup
-	pool                 *ants.Pool   // 协程池
+	pool                 *ants.Pool         // 协程池
 	statusTracker        OrderStatusTracker // 状态追踪器
-	mu                   sync.RWMutex // 保留，待后续任务移除
+	mu                   sync.RWMutex       // 保留，待后续任务移除
 }
 
 // NewOrderProcessor 创建订单处理器
@@ -109,6 +110,7 @@ func NewOrderProcessor(
 	deduper cache.DedupCacheInterface,
 	symbolCache *cache.SymbolCache,
 	positionBalanceCache *cache.PositionBalanceCache,
+	pairCategoryCache *cache.PairCategoryCache,
 ) *OrderProcessor {
 	if batchWriter == nil {
 		logger.Warn().Msg("order processor created without batch writer, writes will be skipped")
@@ -127,6 +129,7 @@ func NewOrderProcessor(
 		deduper:              deduper,
 		symbolCache:          symbolCache,
 		positionBalanceCache: positionBalanceCache,
+		pairCategoryCache:    pairCategoryCache,
 		timeout:              5 * time.Minute,
 		flushChan:            make(chan flushKey, 1000),
 		done:                 make(chan struct{}),
@@ -512,9 +515,13 @@ func (p *OrderProcessor) buildSignal(agg *models.OrderAggregation) *nats.HlAddre
 	// 计算 CloseRate（平仓比例）
 	closeRate := p.calculateCloseRate(direction, assetType, agg.Address, agg.Symbol, agg.TotalSize)
 
+	// 计算 CoinType
+	coinType := p.pairCategoryCache.GetCoinType(agg.Symbol)
+
 	return &nats.HlAddressSignal{
 		Address:      agg.Address,
 		Symbol:       agg.Symbol,
+		CoinType:     coinType,
 		AssetType:    assetType,
 		Direction:    direction,
 		Side:         side,

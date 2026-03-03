@@ -57,16 +57,16 @@ func TestOrderProcessor_BasicAggregation(t *testing.T) {
 	positionBalanceCache.Set("0x123", 10000.0, 50000.0, nil, nil)
 	positionBalanceCache.Set("0x456", 20000.0, 80000.0, nil, nil)
 
-	processor := NewOrderProcessor(publisher, nil, deduper, symbolCache, positionBalanceCache)
+	processor := NewOrderProcessor(publisher, nil, deduper, symbolCache, positionBalanceCache, nil)
 	defer processor.Stop()
 
 	// 模拟第一个 fill
 	fill1 := hyperliquid.WsOrderFill{
-		Oid: 12345,
-		Tid: 1,
-		Sz:  "1.5",
-		Px:  "100.0",
-		Dir: "Open Long",
+		Oid:  12345,
+		Tid:  1,
+		Sz:   "1.5",
+		Px:   "100.0",
+		Dir:  "Open Long",
 		Time: time.Now().UnixMilli(),
 	}
 
@@ -84,11 +84,11 @@ func TestOrderProcessor_BasicAggregation(t *testing.T) {
 
 	// 模拟第二个 fill (同一订单)
 	fill2 := hyperliquid.WsOrderFill{
-		Oid: 12345,
-		Tid: 2,
-		Sz:  "0.5",
-		Px:  "102.0",
-		Dir: "Open Long",
+		Oid:  12345,
+		Tid:  2,
+		Sz:   "0.5",
+		Px:   "102.0",
+		Dir:  "Open Long",
 		Time: time.Now().UnixMilli(),
 	}
 
@@ -133,15 +133,15 @@ func TestOrderProcessor_DeduplicateTid(t *testing.T) {
 	positionBalanceCache.Set("0x123", 10000.0, 50000.0, nil, nil)
 	positionBalanceCache.Set("0x456", 20000.0, 80000.0, nil, nil)
 
-	processor := NewOrderProcessor(publisher, nil, deduper, symbolCache, positionBalanceCache)
+	processor := NewOrderProcessor(publisher, nil, deduper, symbolCache, positionBalanceCache, nil)
 	defer processor.Stop()
 
 	fill := hyperliquid.WsOrderFill{
-		Oid: 12345,
-		Tid: 100,
-		Sz:  "1.0",
-		Px:  "100.0",
-		Dir: "Open Long",
+		Oid:  12345,
+		Tid:  100,
+		Sz:   "1.0",
+		Px:   "100.0",
+		Dir:  "Open Long",
 		Time: time.Now().UnixMilli(),
 	}
 
@@ -170,18 +170,18 @@ func TestOrderProcessor_TimeoutFlush(t *testing.T) {
 	positionBalanceCache := cache.NewPositionBalanceCache()
 	positionBalanceCache.Set("0x123", 10000.0, 50000.0, nil, nil)
 
-	orderProc := NewOrderProcessor(publisher, nil, deduper, symbolCache, positionBalanceCache)
+	orderProc := NewOrderProcessor(publisher, nil, deduper, symbolCache, positionBalanceCache, nil)
 	defer orderProc.Stop()
 
 	// 设置短超时用于测试
 	orderProc.SetTimeout(100 * time.Millisecond)
 
 	fill := hyperliquid.WsOrderFill{
-		Oid: 12345,
-		Tid: 1,
-		Sz:  "1.0",
-		Px:  "100.0",
-		Dir: "Open Long",
+		Oid:  12345,
+		Tid:  1,
+		Sz:   "1.0",
+		Px:   "100.0",
+		Dir:  "Open Long",
 		Time: time.Now().UnixMilli(),
 	}
 
@@ -216,16 +216,16 @@ func TestOrderProcessor_MultipleDirections(t *testing.T) {
 	positionBalanceCache.Set("0x123", 10000.0, 50000.0, nil, nil)
 	positionBalanceCache.Set("0x456", 20000.0, 80000.0, nil, nil)
 
-	processor := NewOrderProcessor(publisher, nil, deduper, symbolCache, positionBalanceCache)
+	processor := NewOrderProcessor(publisher, nil, deduper, symbolCache, positionBalanceCache, nil)
 	defer processor.Stop()
 
 	// 开仓订单
 	openFill := hyperliquid.WsOrderFill{
-		Oid: 12345,
-		Tid: 1,
-		Sz:  "1.0",
-		Px:  "100.0",
-		Dir: "Open Long",
+		Oid:  12345,
+		Tid:  1,
+		Sz:   "1.0",
+		Px:   "100.0",
+		Dir:  "Open Long",
 		Time: time.Now().UnixMilli(),
 	}
 
@@ -240,11 +240,11 @@ func TestOrderProcessor_MultipleDirections(t *testing.T) {
 
 	// 平仓订单（同一 oid，不同方向）
 	closeFill := hyperliquid.WsOrderFill{
-		Oid: 12345,
-		Tid: 2,
-		Sz:  "1.0",
-		Px:  "105.0",
-		Dir: "Close Long",
+		Oid:  12345,
+		Tid:  2,
+		Sz:   "1.0",
+		Px:   "105.0",
+		Dir:  "Close Long",
 		Time: time.Now().UnixMilli(),
 	}
 
@@ -279,16 +279,16 @@ func TestOrderProcessor_SpotVsFutures(t *testing.T) {
 	positionBalanceCache.Set("0x123", 10000.0, 50000.0, nil, nil)
 	positionBalanceCache.Set("0x456", 20000.0, 80000.0, nil, nil)
 
-	processor := NewOrderProcessor(publisher, nil, deduper, symbolCache, positionBalanceCache)
+	processor := NewOrderProcessor(publisher, nil, deduper, symbolCache, positionBalanceCache, nil)
 	defer processor.Stop()
 
 	// 现货订单
 	spotFill := hyperliquid.WsOrderFill{
-		Oid: 1001,
-		Tid: 1,
-		Sz:  "10.0",
-		Px:  "100.0",
-		Dir: "Buy",
+		Oid:  1001,
+		Tid:  1,
+		Sz:   "10.0",
+		Px:   "100.0",
+		Dir:  "Buy",
 		Time: time.Now().UnixMilli(),
 	}
 
@@ -312,11 +312,11 @@ func TestOrderProcessor_SpotVsFutures(t *testing.T) {
 
 	// 合约订单
 	futuresFill := hyperliquid.WsOrderFill{
-		Oid: 1002,
-		Tid: 1,
-		Sz:  "1.0",
-		Px:  "100.0",
-		Dir: "Open Long",
+		Oid:  1002,
+		Tid:  1,
+		Sz:   "1.0",
+		Px:   "100.0",
+		Dir:  "Open Long",
 		Time: time.Now().UnixMilli(),
 	}
 
@@ -347,15 +347,15 @@ func TestOrderProcessor_PositionRate(t *testing.T) {
 	positionBalanceCache.Set("0x123", 10000.0, 50000.0, nil, nil)
 	positionBalanceCache.Set("0x456", 20000.0, 80000.0, nil, nil)
 
-	processor := NewOrderProcessor(publisher, nil, deduper, symbolCache, positionBalanceCache)
+	processor := NewOrderProcessor(publisher, nil, deduper, symbolCache, positionBalanceCache, nil)
 	defer processor.Stop()
 
 	fill := hyperliquid.WsOrderFill{
-		Oid: 12345,
-		Tid: 1,
-		Sz:  "50.0", // 50 * 100 = 5000
-		Px:  "100.0",
-		Dir: "Open Long",
+		Oid:  12345,
+		Tid:  1,
+		Sz:   "50.0", // 50 * 100 = 5000
+		Px:   "100.0",
+		Dir:  "Open Long",
 		Time: time.Now().UnixMilli(),
 	}
 
@@ -387,15 +387,15 @@ func TestOrderProcessor_SignalSentFlag(t *testing.T) {
 	positionBalanceCache.Set("0x123", 10000.0, 50000.0, nil, nil)
 	positionBalanceCache.Set("0x456", 20000.0, 80000.0, nil, nil)
 
-	processor := NewOrderProcessor(publisher, nil, deduper, symbolCache, positionBalanceCache)
+	processor := NewOrderProcessor(publisher, nil, deduper, symbolCache, positionBalanceCache, nil)
 	defer processor.Stop()
 
 	fill := hyperliquid.WsOrderFill{
-		Oid: 12345,
-		Tid: 1,
-		Sz:  "1.0",
-		Px:  "100.0",
-		Dir: "Open Long",
+		Oid:  12345,
+		Tid:  1,
+		Sz:   "1.0",
+		Px:   "100.0",
+		Dir:  "Open Long",
 		Time: time.Now().UnixMilli(),
 	}
 
@@ -436,7 +436,7 @@ func TestOrderProcessor_PositionUpdateMessage(t *testing.T) {
 	symbolCache := cache.NewSymbolCache()
 	positionBalanceCache := cache.NewPositionBalanceCache()
 
-	orderProc := NewOrderProcessor(publisher, nil, deduper, symbolCache, positionBalanceCache)
+	orderProc := NewOrderProcessor(publisher, nil, deduper, symbolCache, positionBalanceCache, nil)
 	defer orderProc.Stop()
 
 	// 创建 PositionUpdateMessage
@@ -459,7 +459,7 @@ func TestOrderProcessor_ConcurrentFills(t *testing.T) {
 	positionBalanceCache := cache.NewPositionBalanceCache()
 	positionBalanceCache.Set("0x123", 10000.0, 50000.0, nil, nil)
 
-	orderProc := NewOrderProcessor(publisher, nil, deduper, symbolCache, positionBalanceCache)
+	orderProc := NewOrderProcessor(publisher, nil, deduper, symbolCache, positionBalanceCache, nil)
 	defer orderProc.Stop()
 
 	// 并发发送多个 fills
@@ -467,11 +467,11 @@ func TestOrderProcessor_ConcurrentFills(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		go func(idx int) {
 			fill := hyperliquid.WsOrderFill{
-				Oid: 12345,
-				Tid: int64(idx + 1),
-				Sz:  "1.0",
-				Px:  "100.0",
-				Dir: "Open Long",
+				Oid:  12345,
+				Tid:  int64(idx + 1),
+				Sz:   "1.0",
+				Px:   "100.0",
+				Dir:  "Open Long",
 				Time: time.Now().UnixMilli(),
 			}
 

@@ -62,6 +62,7 @@ func NewSubscriptionManager(
 	publisher Publisher,
 	symbolCache *cache.SymbolCache,
 	positionBalanceCache *cache.PositionBalanceCache,
+	pairCategoryCache *cache.PairCategoryCache,
 	batchWriter *processor.BatchWriter,
 ) *SubscriptionManager {
 	deduper := NewOrderDeduper(30 * time.Minute) // 默认 30 分钟去重窗口
@@ -70,7 +71,7 @@ func NewSubscriptionManager(
 	messageQueue := processor.NewMessageQueue(10000, nil)
 
 	// 创建订单处理器
-	orderProcessor := processor.NewOrderProcessor(publisher, batchWriter, deduper, symbolCache, positionBalanceCache)
+	orderProcessor := processor.NewOrderProcessor(publisher, batchWriter, deduper, symbolCache, positionBalanceCache, pairCategoryCache)
 
 	// 设置处理器
 	messageQueue.SetHandler(orderProcessor)

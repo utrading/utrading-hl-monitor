@@ -22,6 +22,7 @@ var (
 	HlPositionCache  *hlPositionCache
 	HlWatchAddress   *hlWatchAddress
 	OrderAggregation *orderAggregation
+	PairConfig       *pairConfig
 )
 
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
@@ -31,6 +32,7 @@ func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	HlPositionCache = &Q.HlPositionCache
 	HlWatchAddress = &Q.HlWatchAddress
 	OrderAggregation = &Q.OrderAggregation
+	PairConfig = &Q.PairConfig
 }
 
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
@@ -41,6 +43,7 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 		HlPositionCache:  newHlPositionCache(db, opts...),
 		HlWatchAddress:   newHlWatchAddress(db, opts...),
 		OrderAggregation: newOrderAggregation(db, opts...),
+		PairConfig:       newPairConfig(db, opts...),
 	}
 }
 
@@ -52,6 +55,7 @@ type Query struct {
 	HlPositionCache  hlPositionCache
 	HlWatchAddress   hlWatchAddress
 	OrderAggregation orderAggregation
+	PairConfig       pairConfig
 }
 
 func (q *Query) Available() bool { return q.db != nil }
@@ -64,6 +68,7 @@ func (q *Query) clone(db *gorm.DB) *Query {
 		HlPositionCache:  q.HlPositionCache.clone(db),
 		HlWatchAddress:   q.HlWatchAddress.clone(db),
 		OrderAggregation: q.OrderAggregation.clone(db),
+		PairConfig:       q.PairConfig.clone(db),
 	}
 }
 
@@ -83,6 +88,7 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 		HlPositionCache:  q.HlPositionCache.replaceDB(db),
 		HlWatchAddress:   q.HlWatchAddress.replaceDB(db),
 		OrderAggregation: q.OrderAggregation.replaceDB(db),
+		PairConfig:       q.PairConfig.replaceDB(db),
 	}
 }
 
@@ -92,6 +98,7 @@ type queryCtx struct {
 	HlPositionCache  IHlPositionCacheDo
 	HlWatchAddress   IHlWatchAddressDo
 	OrderAggregation IOrderAggregationDo
+	PairConfig       IPairConfigDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
@@ -101,6 +108,7 @@ func (q *Query) WithContext(ctx context.Context) *queryCtx {
 		HlPositionCache:  q.HlPositionCache.WithContext(ctx),
 		HlWatchAddress:   q.HlWatchAddress.WithContext(ctx),
 		OrderAggregation: q.OrderAggregation.WithContext(ctx),
+		PairConfig:       q.PairConfig.WithContext(ctx),
 	}
 }
 

@@ -33,6 +33,7 @@ func (d *SignalDAO) Create(natsSignal *nats.HlAddressSignal) error {
 		Side:         natsSignal.Side,
 		Price:        natsSignal.Price,
 		Size:         natsSignal.Size,
+		CoinType:     natsSignal.CoinType,
 		ExpiredAt:    expiredAt,
 	}
 

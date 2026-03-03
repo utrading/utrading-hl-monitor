@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/utrading/utrading-hl-monitor/internal/cache"
 	"github.com/utrading/utrading-hl-monitor/internal/cleaner"
 	"github.com/utrading/utrading-hl-monitor/internal/processor"
 	"github.com/utrading/utrading-hl-monitor/internal/symbol"
@@ -97,8 +98,12 @@ func main() {
 	// 获取仓位余额缓存（从 PositionManager 传递给 SubscriptionManager）
 	positionBalanceCache := posManager.PositionBalanceCache()
 
+	// 创建 PairCategory 缓存（启动时加载并定时刷新）
+	pairCategoryCache := cache.NewPairCategoryCache()
+	pairCategoryCache.Start()
+
 	// 初始化订阅管理器（监听订单成交，也使用 ws.PoolManager）
-	subManager := manager.NewSubscriptionManager(wsPoolManager, publisher, symbolManager.SymbolCache(), positionBalanceCache, batchWriter)
+	subManager := manager.NewSubscriptionManager(wsPoolManager, publisher, symbolManager.SymbolCache(), positionBalanceCache, pairCategoryCache, batchWriter)
 
 	// 加载已发送的订单到去重缓存（防止服务重启后重复处理）
 	deduper := subManager.GetDeduper()

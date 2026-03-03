@@ -13,6 +13,7 @@ type HlAddressSignal struct {
 	Address      string  `json:"address"`       // 监控地址
 	AssetType    string  `json:"asset_type"`    // spot/futures
 	Symbol       string  `json:"symbol"`        // 交易对
+	CoinType     string  `json:"coin_type"`     // 币种类型: A/B/C/D
 	Direction    string  `json:"direction"`     // open/close
 	Side         string  `json:"side"`          // LONG/SHORT
 	PositionRate float64 `json:"position_rate"` // 仓位比例: 百分比，如 15.50%
