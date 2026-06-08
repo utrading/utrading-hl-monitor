@@ -18,6 +18,11 @@
 
 [nats]
     endpoint = "nats://localhost:4222"
+    # 以下字段均可选，不配置时自动使用默认值
+    reconnect_wait = "2s"       # 重连等待间隔
+    max_reconnects = -1         # 最大重连次数，-1 表示无限
+    ping_interval = "20s"       # 心跳间隔
+    connect_timeout = "10s"     # 连接超时
 
 [log]
     level = "info"

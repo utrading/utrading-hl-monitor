@@ -60,8 +60,8 @@ func main() {
 	dataCleaner := cleaner.NewCleaner(dal.MySQL())
 	dataCleaner.Start()
 
-	// 初始化 NATS
-	publisher, err := nats.NewPublisher(cfg.NATS.Endpoint)
+	// 初始化 NATS（带自动重连）
+	publisher, err := nats.NewPublisher(cfg.NATS)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("init nats publisher failed")
 	}

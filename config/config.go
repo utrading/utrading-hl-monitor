@@ -30,7 +30,11 @@ type MySQL struct {
 }
 
 type NATS struct {
-	Endpoint string `toml:"endpoint"`
+	Endpoint       string        `toml:"endpoint"`
+	ReconnectWait  time.Duration `toml:"reconnect_wait"`
+	MaxReconnects  int           `toml:"max_reconnects"`
+	PingInterval   time.Duration `toml:"ping_interval"`
+	ConnectTimeout time.Duration `toml:"connect_timeout"`
 }
 
 type Logger struct {
